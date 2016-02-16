@@ -29,13 +29,13 @@ def updateP(P, A, B, i, j):
     diff[i] = 0
     diff[j] = 0
     # D12 is 2 x n
-    D12 = np.array([diff, -diff])
+    D12 = np.array([-diff, diff])
     # A11,A21 @ D12 -> n x n
     Pup = np.array([A[:,i],A[:,j]]).T @ D12
     # A12,A22 @ D21 -> n X 2
     Pupcols = A @ D12.T
-    Pup[:,i] = Pupcols[:,0]
-    Pup[:,j] = Pupcols[:,1]
+    Pup[:,i] = Pupcols[:,0] - Pup[:,i]
+    Pup[:,j] = Pupcols[:,1] - Pup[:,j]
     P += Pup
 
 def deltaMat(A, B, P):
@@ -70,7 +70,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     # P is A'B
     # T is the test matrix such that if T(i,j) == 0, then i and j can be swapped (i != j)
     P = A @ B
-    T = deltaMat(A, B)
+    T = deltaMat(A, B, P)
     nOverlaps = np.trace(P)
     nOldOverlaps = nOverlaps
     oldT = T.copy()
@@ -142,7 +142,7 @@ def ECMCMC(A, startingNC, nIters = 5):
 
         # compute P and T
         updateP(P, A, B, i, j)
-        T = deltaMat(A, B)
+        T = deltaMat(A, B, P)
 
         # test the number of overlaps
         nOldOverlaps = nOverlaps

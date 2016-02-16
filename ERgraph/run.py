@@ -5,6 +5,8 @@ import itertools
 import sys
 import argparse
 import pickle
+
+sys.path.insert(0,'..')
 import apxgi
 
 if __name__ == '__main__':

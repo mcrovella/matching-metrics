@@ -1,8 +1,9 @@
 import matplotlib as mp
 import matplotlib.pyplot as plt
 import itertools
+import numpy as np
 
-def CIPlot(sample, n, p):
+def CIPlot(ECvals, sample, n, p):
     s = np.array(sample)
     ss = np.sort(s, axis=0)
     ns = ss.shape[1]

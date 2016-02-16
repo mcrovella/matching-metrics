@@ -36,9 +36,8 @@ def updateDeltaMat(n, A, B, P, T):
 def deltaMat(A, B):
     P = A @ B
     n = A.shape[0]
-    Pdiag = np.diag(np.diag(P))
-    OnesMat = np.ones((n,n),dtype=int) 
-    T = Pdiag @ OnesMat + OnesMat @ Pdiag - (P + P.T + 2 * A * B)
+    K = np.ones((n,1),dtype=int) @ [np.diag(P)]
+    T = K + K.T - (P + P.T + 2 * A * B)
     return P, T
 
 def ECMCMC(A, startingNC, nIters = 5):

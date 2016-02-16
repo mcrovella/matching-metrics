@@ -23,17 +23,8 @@ def swapRowsCols(B, i, j):
     B[:,i] = B[:,j]
     B[:,j] = tmp
     
-# def updateDeltaMat(A, B, P, T):
-
-# this is n^3 + BigConstant*n^2
-# turns out to be slower in practice, at least for small graphs, than deltaMat
-def updateDeltaMat(n, A, B, P, T):
-    P = A @ B
-    for i, j in itertools.product(range(n), range(n)):
-        T[i,j] = P[i,i]+P[j,j]-P[i,j]-P[j,i]-2*A[i,j]*B[i,j]
-
-# this is 3 n^3
 def deltaMat(A, B):
+    # this is the slow step - n^3
     P = A @ B
     n = A.shape[0]
     K = np.ones((n,1),dtype=int) @ [np.diag(P)]
@@ -73,7 +64,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     candidates = np.where((T + np.eye(n))==0)
     m = len(candidates[0])
     if (m == 0):
-        raise ValueError('Mapping has no neighbors for nc={}'.format(nc))
+        raise ValueError('Mapping has no neighbors for nc={}'.format(startingNC))
     oldM = m
     # print('ncandidates = {}'.format(m))
 
@@ -89,7 +80,7 @@ def ECMCMC(A, startingNC, nIters = 5):
         candidates = np.where((T + np.eye(n))==0)
         m = len(candidates[0])
         if (m == 0):
-            raise ValueError('Mapping has no neighbors for n={}, p={}, nc={}'.format(n,p,nc))
+            raise ValueError('Mapping has no neighbors for nc={}'.format(startingNC))
         ## print('ncandidates = {}'.format(m))
 
         # safety check that we never change the edge correctness of our mapping

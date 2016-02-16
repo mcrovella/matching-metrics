@@ -22,14 +22,29 @@ def swapRowsCols(B, i, j):
     tmp = B[:,i].copy()
     B[:,i] = B[:,j]
     B[:,j] = tmp
-    
-def deltaMat(A, B):
-    # this is the slow step - n^3
-    P = A @ B
+
+# This is 2 * n^2
+def updateP(P, A, B, i, j):
+    diff = B[i] - B[j]
+    diff[i] = 0
+    diff[j] = 0
+    # D12 is 2 x n
+    D12 = np.array([diff, -diff])
+    # A11,A21 @ D12 -> n x n
+    Pup = np.array([A[:,i],A[:,j]]).T @ D12
+    # A12,A22 @ D21 -> n X 2
+    Pupcols = A @ D12.T
+    Pup[:,i] = Pupcols[:,0]
+    Pup[:,j] = Pupcols[:,1]
+    P += Pup
+
+def deltaMat(A, B, P):
+    # this was the slow step - n^3
+    # P = A @ B
     n = A.shape[0]
     K = np.ones((n,1),dtype=int) @ [np.diag(P)]
     T = K + K.T - (P + P.T + 2 * A * B)
-    return P, T
+    return T
 
 def ECMCMC(A, startingNC, nIters = 5):
 
@@ -54,7 +69,8 @@ def ECMCMC(A, startingNC, nIters = 5):
 
     # P is A'B
     # T is the test matrix such that if T(i,j) == 0, then i and j can be swapped (i != j)
-    P, T = deltaMat(A, B)
+    P = A @ B
+    T = deltaMat(A, B)
     nOverlaps = np.trace(P)
     nOldOverlaps = nOverlaps
     oldT = T.copy()
@@ -125,7 +141,8 @@ def ECMCMC(A, startingNC, nIters = 5):
         swapRowsCols(B, i, j)
 
         # compute P and T
-        P, T = deltaMat(A, B)
+        updateP(P, A, B, i, j)
+        T = deltaMat(A, B)
 
         # test the number of overlaps
         nOldOverlaps = nOverlaps

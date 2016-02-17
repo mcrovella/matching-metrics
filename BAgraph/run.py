@@ -28,6 +28,7 @@ if __name__ == '__main__':
         print('{}'.format(i))
 
         # create a random graph
+        gtype = 'BA'
         G = nx.barabasi_albert_graph(args.n, int(args.p * args.n))
         while (len(list(nx.connected_components(G))) > 1):
             print('Skipping a disconnected graph.')
@@ -41,9 +42,11 @@ if __name__ == '__main__':
             ECvals.append(EC)
             NCvals.append(nc)
             print('rejects: {}\n****'.format(nRejects))
+            if ((i % 10) == 0):
+                np.savez('raw/Raw-n{}-p{}-nc{}'.format(args.n,args.p,nc),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=gtype)
         except ValueError as err:
             print(err.args)
 
     sample = np.array(sample)
     ECvals = np.array(ECvals)
-    np.savez('Run-n{}-p{}'.format(args.n,args.p), sample=sample, ECvals=ECvals)
+    np.savez('Run-n{}-p{}'.format(args.n,args.p), sample=sample, ECvals=ECvals, n=n, p=p, gtype=gtype)

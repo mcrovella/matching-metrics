@@ -2,20 +2,23 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
+import argparse
 
-def CIPlot(ECvals, sample, n, p):
+def CIPlot(sample, ECvals, pval, n, p, gtype):
     s = np.array(sample)
-    ss = np.sort(s, axis=0)
+    ss = np.sort(s, axis=1)
     ns = ss.shape[1]
-    low = int(0.005*ns)
-    hi = int(0.995*ns)
+    low = int(pval*ns)
+    hi = int((1-pval)*ns)
     med = int(ns/2)
 
     plt.figure()
     plt.errorbar(ECvals, ss[:,med], fmt='none', yerr=[ss[:,med]-ss[:,low],ss[:,hi]-ss[:,med]])
     plt.xlabel('Edge Correctness')
     plt.ylabel('Node Correctness')
-    plt.title('99% Confidence Intervals for NC as a function of EC, n={}, p={}'.format(n,p))
+    plt.xlim([0,1])
+    plt.ylim([0,1])
+    plt.title('{:2.0f}% Confidence Intervals for NC as a function of EC ({}, {}, {})'.format(100*(1-2*pval),gtype,n,p))
     plt.savefig('NCCI-n{}-p{}.pdf'.format(n,p))
 
 # fraction of pairs (a, b) where a > b
@@ -66,7 +69,7 @@ def signifPlot(sample, ECvals, n, p):
     plt.imshow(frs.T, origin='lower')
     plt.savefig('NCSignif-n{}-p{}.pdf'.format(n,p))
 
-def rejectPlot(sample, ECvals, pval, n, p):
+def rejectPlot(sample, ECvals, pval, n, p, gtype):
     # find the upper and lower values at which one may reject the null
     # hypothesis at a given p value
     # this is equal to ECval at which the fraction of pairs for which a<b is equal to pval
@@ -80,32 +83,38 @@ def rejectPlot(sample, ECvals, pval, n, p):
     upper = np.zeros(m)
     for i in range(m):
         # smallest ECval bigger than me at which (P[i] > P[j]) < pval
+        # want smallest ECval such that all ECvals[j] with (P[i] > P[j]) < pval
         try:
-            upper[i] = np.min(ECvals[(F[i,:] < pval) & (ECvals > ECvals[i])])
+            # upper[i] = np.min(ECvals[(F[i,:] < pval) & (ECvals > ECvals[i])])
+            upper[i] = np.min(ECvals[np.max(ECvals[F[i,:] > pval]) < ECvals])
         except ValueError:
-            upper[i] = 1.0
+            upper[i] = np.nan
         try:
-            lower[i] = np.max(ECvals[(F[:,i] < pval) & (ECvals < ECvals[i])])
+            lower[i] = np.max(ECvals[np.min(ECvals[F[:,i] > pval]) > ECvals])
         except ValueError:
-            lower[i] = 0.0
+            lower[i] = np.nan
 
     plt.figure()
     plt.plot(ECvals, upper-ECvals, 'go')
     plt.plot(ECvals, lower-ECvals, 'ro')
     plt.xlabel('EC')
+    plt.xlim([0,1])
     plt.ylabel(r'$\Delta$EC')
-    plt.title(r'Difference in EC necessary to reject $H_0$ at p = {}, G=({},{})'.format(pval,n,p))
+    plt.title(r'Difference in EC necessary to reject $H_0$ at p = {}, G=({},{},{})'.format(pval,gtype,n,p))
     plt.savefig('RejEC-n{}-p{}-pval{}.pdf'.format(n,p,pval))
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('n', type=int)
-    parser.add_argument('p', type=float)
+    parser.add_argument('runfile')
+    parser.add_argument('pval', type=float, default=0.005)
     args = parser.parse_args()
 
-    CIPlot(sample, args.n, args.p)
-    signifPlot(sample, ECvals, args.n, args.p)
-    rejectPlot(sample, ECvals, 0.005, args.n, args.p)
+    v = np.load(args.runfile)
+
+    CIPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
+    # these aren't that useful
+    # signifPlot(v['sample'], v['ECvals'], v['n'], v['p'])
+    rejectPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
 

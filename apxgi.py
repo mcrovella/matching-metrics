@@ -193,4 +193,4 @@ if __name__ == '__main__':
 
     sample = np.array(sample)
     ECvals = np.array(ECvals)
-    np.savez('Run-n{}-p{}'.format(args.n,args.p), sample=sample, ECvals=ECvals)
+    np.savez('Run-n{}-p{}'.format(args.n,args.p), sample=sample, ECvals=ECvals, n=n, p=p)

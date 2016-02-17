@@ -74,6 +74,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     nOverlaps = np.trace(P)
     nOldOverlaps = nOverlaps
     oldT = T.copy()
+    oldP = P.copy()
 
     # determine the set of legal transitions
     # the size of the set is the degree of this state in the Markov chain
@@ -113,6 +114,7 @@ def ECMCMC(A, startingNC, nIters = 5):
             m = oldM
             T = oldT
             B = oldB
+            P = oldP
             candidates = np.where((T + np.eye(n))==0)
 
         # save this state so it can be reverted if needed
@@ -120,6 +122,7 @@ def ECMCMC(A, startingNC, nIters = 5):
         oldM = m
         oldT = T.copy()
         oldB = B.copy()
+        oldP = P.copy()
 
         # compute the number of correct node mappings
         correctness.append(np.sum(np.array(range(n))==perm))
@@ -138,10 +141,15 @@ def ECMCMC(A, startingNC, nIters = 5):
 
         # we could create a new permutation matrix, recompute B, etc
         # but that would be slow so we just permute the current node mappings
+
+        # apply to P the effect of permuting B 
+        # P = A'B, but recomputing it is too slow
+        updateP(P, A, B, i, j)
+
+        # permute B
         swapRowsCols(B, i, j)
 
-        # compute P and T
-        updateP(P, A, B, i, j)
+        # compute new T
         T = deltaMat(A, B, P)
 
         # test the number of overlaps

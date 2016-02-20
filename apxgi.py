@@ -56,9 +56,14 @@ def ECMCMC(A, startingNC, nIters = 5):
 
     # start with a permutation that has some number of correct node mappings
     # as a way to influence the edge correctness setting for this run
-    correct = np.ceil(n * startingNC).astype('int')
-    incorrect = n - correct
-    perm = list(range(correct))+list(correct + np.random.permutation(incorrect))
+    nCorrect = np.ceil(n * startingNC).astype('int')
+    # perm = list(range(nCorrect))+list(nCorrect + np.random.permutation(n-nCorrect))
+    perm = np.zeros(n, dtype=int)
+    pmap = np.random.permutation(n)
+    correctidx = pmap[:nCorrect]
+    incorrectidx = pmap[nCorrect:]
+    perm[correctidx] = correctidx
+    perm[incorrectidx[np.random.permutation(n-nCorrect)]] = incorrectidx
     oldPerm = perm.copy()
 
     # create a permutation matrix
@@ -86,7 +91,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     # print('ncandidates = {}'.format(m))
 
     EC = nOverlaps/np.trace(A.T @ A)
-    print('{}, {}'.format(nOverlaps,EC))
+    print('Starting NC: {}.  Edges matching: {}, EC: {:0.5f}'.format(nCorrect/n,nOverlaps,EC))
 
     nRejects = 0
     

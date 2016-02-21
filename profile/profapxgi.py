@@ -5,6 +5,7 @@ import itertools
 import sys
 import argparse
 import pickle
+import numba
 
 if sys.version_info[0] < 3 or sys.version_info[1] < 5:
     print("Requires Python 3.5 or greater.")
@@ -24,6 +25,8 @@ def swapRowsCols(B, i, j):
     B[:,j] = tmp
 
 # This is 2 * n^2
+from numbapro import int64,vectorize,void
+@vectorize(['void(int64, int64, int64, int64, int64)'],target='gpu')
 def updateP(P, A, B, i, j):
     diff = B[i] - B[j]
     diff[i] = 0
@@ -38,12 +41,14 @@ def updateP(P, A, B, i, j):
     Pup[:,j] = Pupcols[:,1] - Pup[:,j]
     P += Pup
 
-def deltaMat(A, B, P):
+# from accelerate.numba import int64,vectorize
+from numbapro import int64,vectorize
+#@cuda.jit(int64[:,:](int64[:,:],int64[:,:],int64[:,:],int64,int64[:,:]),target="cpu")
+@vectorize(['int64(int64, int64, int64, int64, int64, int64)'],target='gpu')
+def deltaMat(A, B, P, K, PT, KT):
     # this was the slow step - n^3
     # P = A @ B
-    n = A.shape[0]
-    K = np.ones((n,1),dtype=int) @ [np.diag(P)]
-    T = K + K.T - (P + P.T + 2 * A * B)
+    T = K + KT - (P + PT + 2 * A * B)
     return T
 
 def ECMCMC(A, startingNC, nIters = 5):
@@ -56,14 +61,9 @@ def ECMCMC(A, startingNC, nIters = 5):
 
     # start with a permutation that has some number of correct node mappings
     # as a way to influence the edge correctness setting for this run
-    nCorrect = np.ceil(n * startingNC).astype('int')
-    # important to choose the correctly-matched nodes randomly
-    perm = np.zeros(n, dtype=int)
-    pmap = np.random.permutation(n)
-    correctidx = pmap[:nCorrect]
-    incorrectidx = pmap[nCorrect:]
-    perm[correctidx] = correctidx
-    perm[incorrectidx[np.random.permutation(n-nCorrect)]] = incorrectidx
+    correct = np.ceil(n * startingNC).astype('int')
+    incorrect = n - correct
+    perm = list(range(correct))+list(correct + np.random.permutation(incorrect))
     oldPerm = perm.copy()
 
     # create a permutation matrix
@@ -75,7 +75,8 @@ def ECMCMC(A, startingNC, nIters = 5):
     # P is A'B
     # T is the test matrix such that if T(i,j) == 0, then i and j can be swapped (i != j)
     P = A @ B
-    T = deltaMat(A, B, P)
+    K = np.ones((n,1),dtype=int) @ [np.diag(P)]
+    T = deltaMat(A, B, P, K, P.T, K.T)
     nOverlaps = np.trace(P)
     nOldOverlaps = nOverlaps
     oldT = T.copy()
@@ -91,8 +92,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     # print('ncandidates = {}'.format(m))
 
     EC = nOverlaps/np.trace(A.T @ A)
-    NC = np.sum(perm == list(range(n)))
-    print('NC: {:0.5f}.  Edges matching: {}, EC: {:0.5f}'.format(NC/n,nOverlaps,EC))
+    print('{}, {}'.format(nOverlaps,EC))
 
     nRejects = 0
     
@@ -156,7 +156,8 @@ def ECMCMC(A, startingNC, nIters = 5):
         swapRowsCols(B, i, j)
 
         # compute new T
-        T = deltaMat(A, B, P)
+        K = np.ones((n,1),dtype=int) @ [np.diag(P)]
+        T = deltaMat(A, B, P, K, P.T, K.T)
 
         # test the number of overlaps
         nOldOverlaps = nOverlaps

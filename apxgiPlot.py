@@ -86,11 +86,11 @@ def rejectPlot(sample, ECvals, pval, n, p, gtype):
         # want smallest ECval such that all ECvals[j] with (P[i] > P[j]) < pval
         try:
             # upper[i] = np.min(ECvals[(F[i,:] < pval) & (ECvals > ECvals[i])])
-            upper[i] = np.min(ECvals[np.max(ECvals[F[i,:] > pval]) < ECvals])
+            upper[i] = np.min(ECvals[(ECvals > np.max(ECvals[F[i,:] > pval])) & (ECvals > ECvals[i])])
         except ValueError:
             upper[i] = np.nan
         try:
-            lower[i] = np.max(ECvals[np.min(ECvals[F[:,i] > pval]) > ECvals])
+            lower[i] = np.max(ECvals[(ECvals < np.min(ECvals[F[:,i] > pval])) & (ECvals < ECvals[i])])
         except ValueError:
             lower[i] = np.nan
 

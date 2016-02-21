@@ -36,7 +36,7 @@ if __name__ == '__main__':
         A = np.array(nx.adj_matrix(G).todense())
 
         try:
-            correctness, EC, iters, nCands, nRejects = apxgi.ECMCMC(A, nc)
+            correctness, EC, iters, nCands, nRejects = apxgi.ECMCMC(A, A, nc)
             # use the last n log n values as our sample
             sample.append(correctness[-iters:])
             ECvals.append(EC)

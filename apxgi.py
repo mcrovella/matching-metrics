@@ -46,7 +46,7 @@ def deltaMat(A, B, P):
     T = K + K.T - (P + P.T + 2 * A * B)
     return T
 
-def ECMCMC(A, startingNC, nIters = 5):
+def ECMCMC(A, B, startingNC, nIters = 5):
 
     correctness = []
     nCands = []
@@ -70,7 +70,7 @@ def ECMCMC(A, startingNC, nIters = 5):
     Pi = np.eye(n,dtype=int)[perm].T
 
     # permute the node mappings
-    B = Pi.T @ A @ Pi
+    B = Pi.T @ B @ Pi
 
     # P is A'B
     # T is the test matrix such that if T(i,j) == 0, then i and j can be swapped (i != j)
@@ -181,6 +181,7 @@ if __name__ == '__main__':
         print('{}'.format(i))
 
         # create a random graph
+        gtype = 'ER'
         G = nx.erdos_renyi_graph(args.n, args.p)
         while (len(list(nx.connected_components(G))) > 1):
             print('Skipping a disconnected graph.')
@@ -188,12 +189,14 @@ if __name__ == '__main__':
         A = np.array(nx.adj_matrix(G).todense())
 
         try:
-            correctness, EC, iters, nCands, nRejects = ECMCMC(A, nc)
+            correctness, EC, iters, nCands, nRejects = ECMCMC(A, A, nc)
             # use the last n log n values as our sample
             sample.append(correctness[-iters:])
             ECvals.append(EC)
             NCvals.append(nc)
             print('rejects: {}\n****'.format(nRejects))
+            if ((i % 10) == 0):
+                np.savez('raw/Raw-n{}-p{}-nc{}'.format(args.n,args.p,nc),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=gtype)
         except ValueError as err:
             print(err.args)
 

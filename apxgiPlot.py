@@ -4,7 +4,7 @@ import itertools
 import numpy as np
 import argparse
 
-def CIPlot(sample, ECvals, pval, n, p, gtype):
+def CIPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     s = np.array(sample)
     ss = np.sort(s, axis=1)
     ns = ss.shape[1]
@@ -19,6 +19,8 @@ def CIPlot(sample, ECvals, pval, n, p, gtype):
     plt.xlim([0,1])
     plt.ylim([0,1])
     plt.title('{:2.0f}% Confidence Intervals for NC as a function of EC ({}, {}, {})'.format(100*(1-2*pval),gtype,n,p))
+    if (ptype != 'none'):
+        plt.suptitle(r'Perturbed graph: {}, {}'.format(ptype, parg))
     plt.savefig('NCCI-n{}-p{}.pdf'.format(n,p))
 
 # fraction of pairs (a, b) where a > b
@@ -69,7 +71,7 @@ def signifPlot(sample, ECvals, n, p):
     plt.imshow(frs.T, origin='lower')
     plt.savefig('NCSignif-n{}-p{}.pdf'.format(n,p))
 
-def rejectPlot(sample, ECvals, pval, n, p, gtype):
+def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     # find the upper and lower values at which one may reject the null
     # hypothesis at a given p value
     # this is equal to ECval at which the fraction of pairs for which a<b is equal to pval
@@ -100,7 +102,9 @@ def rejectPlot(sample, ECvals, pval, n, p, gtype):
     plt.xlabel('EC')
     plt.xlim([0,1])
     plt.ylabel(r'$\Delta$EC')
-    plt.title(r'Difference in EC necessary to reject $H_0$ at p = {}, G=({},{},{})'.format(pval,gtype,n,p))
+    plt.title(r'$\Delta$EC needed to reject $H_0$ at p = {}, G=({},{},{})'.format(pval,gtype,n,p))
+    if (ptype != 'none'):
+        plt.suptitle(r'Perturbed graph: {}, {}'.format(ptype, parg))
     plt.savefig('RejEC-n{}-p{}-pval{}.pdf'.format(n,p,pval))
 
 
@@ -113,8 +117,12 @@ if __name__ == '__main__':
 
     v = np.load(args.runfile)
 
-    CIPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
     # these aren't that useful
     # signifPlot(v['sample'], v['ECvals'], v['n'], v['p'])
-    rejectPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
+    if 'ptype' in v:
+        CIPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'], v['ptype'], v['parg'])
+        rejectPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'], v['ptype'], v['parg'])
+    else:
+        CIPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
+        rejectPlot(v['sample'], v['ECvals'], args.pval, v['n'], v['p'], v['gtype'])
 

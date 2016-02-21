@@ -21,7 +21,9 @@ def CIPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     plt.title('{:2.0f}% Confidence Intervals for NC as a function of EC ({}, {}, {})'.format(100*(1-2*pval),gtype,n,p))
     if (ptype != 'none'):
         plt.suptitle(r'Perturbed graph: {}, {}'.format(ptype, parg))
-    plt.savefig('NCCI-n{}-p{}.pdf'.format(n,p))
+        plt.savefig('NCCI-n{}-p{}-{}-{}.pdf'.format(n,p,ptype,parg))
+    else:
+        plt.savefig('NCCI-n{}-p{}.pdf'.format(n,p))
 
 # fraction of pairs (a, b) where a > b
 def fracGreater(a, b):
@@ -105,7 +107,10 @@ def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     plt.title(r'$\Delta$EC needed to reject $H_0$ at p = {}, G=({},{},{})'.format(pval,gtype,n,p))
     if (ptype != 'none'):
         plt.suptitle(r'Perturbed graph: {}, {}'.format(ptype, parg))
-    plt.savefig('RejEC-n{}-p{}-pval{}.pdf'.format(n,p,pval))
+        plt.savefig('RejEC-n{}-p{}-pval{}-{}-{}.pdf'.format(n,p,pval,ptype,parg))
+    else:
+        plt.savefig('RejEC-n{}-p{}-pval{}.pdf'.format(n,p,pval))
+
 
 
 if __name__ == '__main__':

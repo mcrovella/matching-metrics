@@ -72,10 +72,10 @@ if __name__ == '__main__':
             NCvals.append(nc)
             print('rejects: {}\n****'.format(nRejects))
             if ((i % 10) == 0):
-                np.savez('{}/raw/Raw-n{}-p{}-nc{}'.format(args.gtype,args.n,args.p,nc),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=args.gtype)
+                np.savez('{}/raw/Raw-n{}-p{}-nc{}-{}-{}'.format(args.gtype,args.n,args.p,nc,args.ptype,args.parg),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=args.gtype,ptype=args.ptype,parg=args.parg)
         except ValueError as err:
             print(err.args)
 
     sample = np.array(sample)
     ECvals = np.array(ECvals)
-    np.savez('{}/Run-n{}-p{}'.format(args.gtype,args.n,args.p), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype, ptype=args.ptype, parg=args.parg)
+    np.savez('{}/Run-n{}-p{}-{}-{}'.format(args.gtype,args.n,args.p,args.ptype,args.parg), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype, ptype=args.ptype, parg=args.parg)

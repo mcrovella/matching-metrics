@@ -1,13 +1,12 @@
-from __future__ import print_function
 import numpy as np
 import networkx as nx
 import itertools
 import sys
 import argparse
 import dsd
-
-sys.path.insert(0,'..')
 import apxgi
+import graphGen
+import time
 
 def createGraph(gtype, n, p):
     if (gtype == 'ER'):
@@ -17,7 +16,7 @@ def createGraph(gtype, n, p):
     elif (gtype == 'WS'):
         return nx.connected_watts_strogatz_graph(n, 4, p)
     elif (gtype == 'GEO'):
-        return gg.geoGraphP(n, 3, p)
+        return graphGen.geoGraphP(n, 3, p)
     else:
         raise ValueError('Invalid graph type')
 
@@ -36,7 +35,7 @@ if __name__ == '__main__':
     parser.add_argument('p', type=float, default=0.03)
     parser.add_argument('gtype', choices=graphTypes)
     parser.add_argument('ptype', choices=perturbFns.keys())
-    parser.add_argument('parg', type=float, default=0.0)
+    parser.add_argument('parg', type=float, nargs='?', default=0.0)
     args = parser.parse_args()
 
     perturb = perturbFns[args.ptype]
@@ -45,8 +44,10 @@ if __name__ == '__main__':
     ECvals = []
     NCvals = []
 
-    for i, nc in zip(range(200), np.linspace(0.005, 1, 200)):
-        print('{}'.format(i))
+    steps = 500
+
+    for i, nc in zip(range(steps), np.linspace(1/steps, 1, steps)):
+        print('{}/{}'.format(i,steps))
 
         # create a random graph
         # ensure we are working with the same nodeset for both graphs
@@ -79,7 +80,7 @@ if __name__ == '__main__':
             if ((i % 10) == 0):
                 if (args.ptype == 'noperturb'):
                     np.savez('noperturb/{}/raw/Raw-n{}-p{}-nc{}'.format(args.gtype,args.n,args.p,nc),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=args.gtype)
-                else
+                else:
                     np.savez('perturb/{}/raw/Raw-n{}-p{}-nc{}-{}-{}'.format(args.gtype,args.n,args.p,nc,args.ptype,args.parg),  correctness=correctness, EC=EC, nc=nc, n=args.n, p=args.p, gtype=args.gtype,ptype=args.ptype,parg=args.parg)
         except ValueError as err:
             print(err.args)
@@ -87,6 +88,8 @@ if __name__ == '__main__':
     sample = np.array(sample)
     ECvals = np.array(ECvals)
     if (args.ptype == 'noperturb'):
-        np.savez('noperturb/{}/Run-n{}-p{}'.format(args.gtype,args.n,args.p), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=gtype)
-    else
+        np.savez('noperturb/{}/Run-n{}-p{}'.format(args.gtype,args.n,args.p), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype)
+    else:
         np.savez('perturb/{}/Run-n{}-p{}-{}-{}'.format(args.gtype,args.n,args.p,args.ptype,args.parg), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype, ptype=args.ptype, parg=args.parg)
+    t = time.process_time()
+    print('Ended: n={}, p={}, {}, {}, steps={}, elapsed time={} secs ({} secs/step).'.format(args.n,args.p,args.gtype,args.ptype,steps,t,t/steps))

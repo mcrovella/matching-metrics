@@ -1,3 +1,5 @@
+# Run as of Feb 28, 2016
+
 python run.py 500 0.03 ER noperturb
 python run.py 500 0.06 ER noperturb
 python run.py 500 0.09 ER noperturb

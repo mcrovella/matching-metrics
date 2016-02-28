@@ -14,7 +14,7 @@ def createGraph(gtype, n, p):
     elif (gtype == 'BA'):
         return nx.barabasi_albert_graph(n, int(p * n))
     elif (gtype == 'WS'):
-        return nx.connected_watts_strogatz_graph(n, 4, p)
+        return nx.connected_watts_strogatz_graph(n, 8, p)
     elif (gtype == 'GEO'):
         return graphGen.geoGraphP(n, 3, p)
     else:

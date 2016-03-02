@@ -1,3 +1,5 @@
+module Apxgi
+
 function swap!(l, i, j)
          tmp = l[i]
          l[i] = l[j]
@@ -31,7 +33,11 @@ end
 function deltaMat(A, B, P)
     # this was the slow step - n^3
     # P = A @ B
-    n = A.shape[0]
-    K = np.ones((n,1),dtype=int) @ [np.diag(P)]
-    T = K + K.T - (P + P.T + 2 * A * B)
-    return T
+    n = size(A)[1]
+    K = ones(Int, (n,1)) * reshape(diag(P),(1,n))
+    K + K' - (P + P' + 2 * (A & B))
+end
+
+function ECMCMC(A, B, startingNC, nIters)
+	 
+end

@@ -69,6 +69,7 @@ def ECMCMC(A, B, startingNC, nIters = 5):
 
     # permute the node mappings
     B = Pi.T @ B @ Pi
+    oldB = B.copy()
 
     # P is A'B
     # T is the test matrix such that if T(i,j) == 0, then i and j can be swapped (i != j)

@@ -94,7 +94,7 @@ def ECMCMC(A, B, startingNC, nIters = 5):
     print('NC: {:0.5f}.  Edges matching: {}, EC: {:0.5f}'.format(NC/n,nOverlaps,EC))
 
     nRejects = 0
-    
+
     for i in range(nIters*iters):
 
         # determine the set of legal transitions

@@ -95,7 +95,9 @@ def ECMCMC(A, B, startingNC, nIters = 5):
 
     nRejects = 0
     
+    print("iters: {}".format(nIters*iters))
     for i in range(nIters*iters):
+
 
         # determine the set of legal transitions
         # the size of the set is the degree of this state in the Markov chain

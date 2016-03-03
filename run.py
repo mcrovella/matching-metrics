@@ -44,9 +44,9 @@ if __name__ == '__main__':
     ECvals = []
     NCvals = []
 
-    steps = 500
+    steps = 3
 
-    for i, nc in zip(range(steps), np.linspace(1/steps, 1, steps)):
+    for i, nc in zip(range(steps), np.linspace(1/(steps+1), 1, steps, endpoint=False)):
         print('{}/{}'.format(i,steps))
 
         # create a random graph
@@ -92,4 +92,4 @@ if __name__ == '__main__':
     else:
         np.savez('perturb/{}/Run-n{}-p{}-{}-{}'.format(args.gtype,args.n,args.p,args.ptype,args.parg), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype, ptype=args.ptype, parg=args.parg)
     t = time.process_time()
-    print('Ended: n={}, p={}, {}, {}, steps={}, elapsed time={} secs ({} secs/step).'.format(args.n,args.p,args.gtype,args.ptype,steps,t,t/steps))
+    print('Ended: n={}, p={}, {}, {}, steps={}, elapsed time={:.2f} secs ({:.2f} secs/step).'.format(args.n,args.p,args.gtype,args.ptype,steps,t,t/steps))

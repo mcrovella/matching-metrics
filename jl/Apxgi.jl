@@ -91,8 +91,10 @@ function ECMCMC(A, B, startingNC, nIters)
       @printf("NC: %0.5f.  Edges matching: %d, EC: %0.5f\n",NC/n,nOverlaps,EC)
 
       nRejects = 0
-    
+
+      @printf("iters: %d\n",nIters*iters)
       for i in 1:(nIters*iters)
+
 
         # determine the set of legal transitions
         # the size of the set is the degree of this state in the Markov chain

@@ -29,4 +29,31 @@ def geoGraphP(n, d, p):
 #     """input: n, degree sequence.  degrees are assigned to nodes.  normalize sum of all
 #    products to sum to 1
 
+def VazquezGraph(n, p, q):
+    """ Create a graph according to Vazquez et al.
+    VazquezGraph(n, p, q): n is number of nodes,
+    p is link creation probability, q is divergence
+    rate."""
 
+    # Start with 2 connected nodes, then repeat
+    # n-2 times:
+    # Duplication: A node i is selected at random.
+    # A new node i', with a link to all the
+    # neighbors of i, is created.With probability p
+    # a link between i' and i is established.
+    # Divergence: For each of the nodes j
+    # linked to i' and i we choose randomly one
+    # of the two links (i', j) or (i, j) and remove it
+    # with probability q.  (From Vazquez)
+
+    A = np.zeros((n,n),dtype='int')
+    G = nx.Graph()
+    G.add_nodes_from(range(n))
+    G.add_edge(0,1)
+    for node in range(2,n):
+        nodeI = np.random.random_integers(0,node-1,1)
+        if np.random.random() < q:
+            nx.add_edge(node, nodeI)
+        for ngh in nx.neighbors(nodeI):
+            nx.add_edge(ngh, node)
+            

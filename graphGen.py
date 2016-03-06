@@ -50,10 +50,14 @@ def VazquezGraph(n, p, q):
     G = nx.Graph()
     G.add_nodes_from(range(n))
     G.add_edge(0,1)
-    for node in range(2,n):
-        nodeI = np.random.random_integers(0,node-1,1)
-        if np.random.random() < q:
-            nx.add_edge(node, nodeI)
-        for ngh in nx.neighbors(nodeI):
-            nx.add_edge(ngh, node)
-            
+    for iPrime in range(2,n):
+        i = np.random.random_integers(0,iPrime-1,1)[0]
+        if np.random.random() < p:
+            G.add_edge(iPrime, i) 
+        for j in G.neighbors(i):
+            if j != iPrime:
+                G.add_edge(j, iPrime)
+        for j in G.neighbors(iPrime):
+            if np.random.random() < q and j != i:
+                G.remove_edge(j, np.random.permutation([iPrime, i])[0])
+    return G

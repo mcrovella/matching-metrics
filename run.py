@@ -21,6 +21,7 @@ def createGraph(gtype, n, p):
         # Vazquez recommends p = 0.1, q = 0.7
         # Gibson suggests p = 0.24, q = 0.887
         qmap = {0.1:0.7, 0.24:0.887}
+        assert(p in qmap.keys())
         return graphGen.VazquezGraph(n, p, qmap[p])
     else:
         raise ValueError('Invalid graph type')

@@ -23,9 +23,16 @@ def geoGraphP(n, d, p):
     A = ((eucDist + dists[-1] * np.eye(n)) < epsilon).astype(int)
     return nx.to_networkx_graph(A)
 
-# def StickyGraph(
-#     """input: n, degree sequence.  degrees are assigned to nodes.  normalize sum of all
-#    products to sum to 1
+def StickyGraph(n, deg):
+     """input: n, degree sequence."""
+    assert(n == len(deg))
+    deg = np.array(deg) / np.sqrt(np.sum(deg))
+    A = np.zeros((n,n),dtype=int)
+    for i,j in itertools.combinations(range(n),2):
+        if (i != j) and (np.random.random() < deg[i]*deg[j]):
+            A[i,j] = 1
+            A[j,i] = 1
+    return nx.to_networkx_graph(A)
 
 def VazquezGraph(n, p, q):
     """ Create a graph according to Vazquez et al.

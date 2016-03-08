@@ -20,7 +20,8 @@ def createGraph(gtype, n, p):
     elif (gtype == 'VZ'):
         # Vazquez recommends p = 0.1, q = 0.7
         # Gibson suggests p = 0.24, q = 0.887
-        return graphGen.VazquezGraph(n, p, q)
+        qmap = {0.1:0.7, 0.24:0.887}
+        return graphGen.VazquezGraph(n, p, qmap[p])
     else:
         raise ValueError('Invalid graph type')
 

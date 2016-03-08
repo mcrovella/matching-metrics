@@ -12,8 +12,6 @@ def geoGraph(n, d, epsilon):
     A = ((eucDist + np.eye(n)) < epsilon).astype(int)
     return nx.to_networkx_graph(A)
 
-
-
 def geoGraphP(n, d, p):
     """ Create a geometric graph: n points in d-dimensional space,
     fraction p node pairs are connected"""

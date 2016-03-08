@@ -17,6 +17,10 @@ def createGraph(gtype, n, p):
         return nx.connected_watts_strogatz_graph(n, 8, p)
     elif (gtype == 'GEO'):
         return graphGen.geoGraphP(n, 3, p)
+    elif (gtype == 'VZ'):
+        # Vazquez recommends p = 0.1, q = 0.7
+        # Gibson suggests p = 0.24, q = 0.887
+        return graphGen.VazquezGraph(n, p, q)
     else:
         raise ValueError('Invalid graph type')
 
@@ -28,7 +32,7 @@ if __name__ == '__main__':
 
     perturbFns = {'thin': dsd.thin, 'rewire': dsd.rewire, 'randomize': dsd.randomize, 'scramble': dsd.scramble, 'noperturb' : None}
 
-    graphTypes = ['ER', 'BA', 'WS', 'GEO']
+    graphTypes = ['ER', 'BA', 'WS', 'GEO', 'VZ']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('n', type=int, default=200)
@@ -44,7 +48,7 @@ if __name__ == '__main__':
     ECvals = []
     NCvals = []
 
-    steps = 3
+    steps = 500
 
     for i, nc in zip(range(steps), np.linspace(1/(steps+1), 1, steps, endpoint=False)):
         print('{}/{}'.format(i,steps))

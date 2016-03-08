@@ -1,0 +1,9 @@
+http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2894889/
+
+Yeast2:
+
+Reported an alignment with EC of 11%
+         Showed that under the GEO model this has p value of 0.008
+         "16 127 interactions (edges) among 2390 proteins (nodes)"
+
+

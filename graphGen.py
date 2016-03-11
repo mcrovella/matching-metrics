@@ -24,7 +24,7 @@ def geoGraphP(n, d, p):
     return nx.to_networkx_graph(A)
 
 def StickyGraph(n, deg):
-     """input: n, degree sequence."""
+    """input: n, degree sequence."""
     assert(n == len(deg))
     deg = np.array(deg) / np.sqrt(np.sum(deg))
     A = np.zeros((n,n),dtype=int)

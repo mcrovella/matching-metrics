@@ -23,6 +23,13 @@ def createGraph(gtype, n, p):
         qmap = {0.1:0.7, 0.24:0.887}
         assert(p in qmap.keys())
         return graphGen.VazquezGraph(n, p, qmap[p])
+    elif (gtype == 'EV'):
+        qmap = {0.1:0.7, 0.24:0.887}
+        assert(p in qmap.keys())
+        return graphGen.EVGraph(n, p, qmap[p], n//5, 0.8)
+    elif (gtype == 'SL'):
+        # values from Sole paper
+        return graphGen.SoleGraph(n, 0.53, 0.06)
     else:
         raise ValueError('Invalid graph type')
 
@@ -34,7 +41,7 @@ if __name__ == '__main__':
 
     perturbFns = {'thin': dsd.thin, 'rewire': dsd.rewire, 'randomize': dsd.randomize, 'scramble': dsd.scramble, 'noperturb' : None}
 
-    graphTypes = ['ER', 'BA', 'WS', 'GEO', 'VZ']
+    graphTypes = ['ER', 'BA', 'WS', 'GEO', 'VZ', 'EV', 'SL']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('n', type=int, default=200)

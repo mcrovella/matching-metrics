@@ -100,6 +100,7 @@ def rejectVals(sample, ECvals, pval):
     return upper, lower
 
 def rejectProfile(upper, lower, ECvals):
+    ''' construct a profile of the rejection values that can be used to compare runs '''
     import scipy.interpolate
     import scipy.signal
     uv = np.abs(upper-ECvals)
@@ -113,18 +114,24 @@ def rejectProfile(upper, lower, ECvals):
     sigma = 25
     window = scipy.signal.gaussian(100,sigma)
     smoothed = scipy.signal.convolve(testy, window/window.sum(), mode='valid')
-    return testx[2*sigma:-(sigma-1)], smoothed
+    return testx[2*sigma:-(2*sigma-1)], smoothed
 
 def allRejPlot(flist,pval):
     profiles = {}
+    nvals = {}
     for f in flist:
         v = np.load(f)
         upper, lower = rejectVals(v['sample'],v['ECvals'],pval)
         testx, profile = rejectProfile(upper, lower, v['ECvals'])
-        profiles[v['stype']] = profile
+        profiles[f] = profile
+        nvals[f] = v['n']
+    plt.figure()
+    for stype in profiles.keys():
+        plt.plot(testx, profiles[stype], label=stype)
+    plt.legend(loc='best')
+    plt.show()
 
 def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
-
     upper, lower = rejectVals(sample, ECvals, pval)
     plt.figure()
     plt.plot(ECvals, upper-ECvals, 'go')

@@ -68,7 +68,7 @@ if __name__ == '__main__':
         subECVals[sampType] = []
 
     for i, nc in zip(range(steps), np.linspace(1/(steps+1), 1, steps, endpoint=False)):
-        print('{}/{}'.format(i,steps))
+        print('*****\n{}/{}'.format(i,steps))
         # create a random graph
         # ensure we are working with the same nodeset for both graphs
         G = createGraph(args.gtype, args.n, args.p)

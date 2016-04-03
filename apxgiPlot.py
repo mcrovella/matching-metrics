@@ -73,7 +73,7 @@ def signifPlot(sample, ECvals, n, p):
     plt.imshow(frs.T, origin='lower')
     plt.savefig('NCSignif-n{}-p{}.pdf'.format(n,p))
 
-def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
+def rejectVals(sample, ECvals, pval):
     # find the upper and lower values at which one may reject the null
     # hypothesis at a given p value
     # this is equal to ECval at which the fraction of pairs for which a<b is equal to pval
@@ -97,7 +97,35 @@ def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
             lower[i] = np.max(ECvals[(ECvals < np.min(ECvals[F[:,i] > pval])) & (ECvals < ECvals[i])])
         except ValueError:
             lower[i] = np.nan
+    return upper, lower
 
+def rejectProfile(upper, lower, ECvals):
+    import scipy.interpolate
+    import scipy.signal
+    uv = np.abs(upper-ECvals)
+    lv = np.abs(lower-ECvals)
+    uv[np.isnan(uv)] = 0.0
+    lv[np.isnan(lv)] = 0.0
+    single = np.max(np.array([uv,lv]),axis=0)
+    f = scipy.interpolate.interp1d(ECvals, single)
+    testx = np.linspace(0.05,0.95,500)
+    testy = f(testx)
+    sigma = 25
+    window = scipy.signal.gaussian(100,sigma)
+    smoothed = scipy.signal.convolve(testy, window/window.sum(), mode='valid')
+    return testx[2*sigma:-(sigma-1)], smoothed
+
+def allRejPlot(flist,pval):
+    profiles = {}
+    for f in flist:
+        v = np.load(f)
+        upper, lower = rejectVals(v['sample'],v['ECvals'],pval)
+        testx, profile = rejectProfile(upper, lower, v['ECvals'])
+        profiles[v['stype']] = profile
+
+def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
+
+    upper, lower = rejectVals(sample, ECvals, pval)
     plt.figure()
     plt.plot(ECvals, upper-ECvals, 'go')
     plt.plot(ECvals, lower-ECvals, 'ro')

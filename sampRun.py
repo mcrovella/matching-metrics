@@ -61,7 +61,11 @@ if __name__ == '__main__':
               'BFS': graphSamp.BFSSample,
               'None': lambda G, n: G}
 
-    steps = 500
+    steps = 10
+
+    for sampType in sampleTypes:
+        subSample[sampType] = []
+        subECVals[sampType] = []
 
     for i, nc in zip(range(steps), np.linspace(1/(steps+1), 1, steps, endpoint=False)):
         print('{}/{}'.format(i,steps))
@@ -78,9 +82,6 @@ if __name__ == '__main__':
         # and compute its EC vs NC profile
         for sampType in sampleTypes:
             print('sampling type {}'.format(sampType))
-
-            subSample[sampType] = []
-            subECVals[sampType] = []
 
             Gsamp = sampFn[sampType](G, args.n//2)
             nodeList = Gsamp.nodes()

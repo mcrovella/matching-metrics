@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 correctness, EC, iters, nCands, nRejects = apxgi.ECMCMC(Asamp, Bsamp, nc)
                 # use the last n log n values as our sample
                 subSample[sampType].append(correctness[-iters:])
-                subECvals[sampType].append(EC)
+                subECVals[sampType].append(EC)
                 print('rejects: {}\n****'.format(nRejects))
                 if ((i % 10) == 0):
                     if (args.ptype == 'noperturb'):
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # finally, output all collected data
     for sampType in sampleTypes:
         sample = np.array(subSample[sampType])
-        ECvals = np.array(subECvals[sampType])
+        ECvals = np.array(subECVals[sampType])
         nval = subNVal[sampType]
         if (args.ptype == 'noperturb'):
             np.savez('samprun/noperturb/{}/Run-n{}-p{}-s{}'.format(args.gtype,nval,args.p,sampType), sample=sample, ECvals=ECvals, n=nval, p=args.p, gtype=args.gtype, stype=sampType)

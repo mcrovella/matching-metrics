@@ -61,11 +61,9 @@ def BFSSample(G, n):
     ''' start at a random node, add neighbor of earliest visited node '''
     current = np.random.choice(G.nodes())
     subset = {current}
-    print(current)
     blist = G.neighbors(current)
     while len(subset) < n:
         current = blist.pop(0)
-        print(current)
         blist += list(set(G.neighbors(current)) - subset)
         subset = subset.union({current})
     return G.subgraph(subset)

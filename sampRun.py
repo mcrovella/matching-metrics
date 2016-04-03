@@ -61,7 +61,7 @@ if __name__ == '__main__':
               'BFS': graphSamp.BFSSample,
               'None': lambda G, n: G}
 
-    steps = 10
+    steps = 500
 
     for sampType in sampleTypes:
         subSample[sampType] = []

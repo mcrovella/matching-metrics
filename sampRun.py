@@ -99,9 +99,9 @@ if __name__ == '__main__':
                 print('rejects: {}\n****'.format(nRejects))
                 if ((i % 10) == 0):
                     if (args.ptype == 'noperturb'):
-                        np.savez('samprun/noperturb/{}/raw/Raw-n{}-p{}-nc{}-s{}'.format(args.stype,args.gtype,n,args.p,nc,sampType),  correctness=correctness, EC=EC, nc=nc, n=n, p=args.p, gtype=args.gtype, stype=sampType)
+                        np.savez('samprun/noperturb/{}/raw/Raw-n{}-p{}-nc{}-s{}'.format(args.gtype,n,args.p,nc,sampType),  correctness=correctness, EC=EC, nc=nc, n=n, p=args.p, gtype=args.gtype, stype=sampType)
                     else:
-                        np.savez('samprun/perturb/{}/raw/Raw-n{}-p{}-nc{}-{}-{}-s{}'.format(args.stype,args.gtype,n,args.p,nc,args.ptype,args.parg,sampType),  correctness=correctness, EC=EC, nc=nc, n=n, p=args.p, gtype=args.gtype,ptype=args.ptype,parg=args.parg,stype=sampType)
+                        np.savez('samprun/perturb/{}/raw/Raw-n{}-p{}-nc{}-{}-{}-s{}'.format(args.gtype,n,args.p,nc,args.ptype,args.parg,sampType),  correctness=correctness, EC=EC, nc=nc, n=n, p=args.p, gtype=args.gtype,ptype=args.ptype,parg=args.parg,stype=sampType)
             except ValueError as err:
                 print(err.args)
 

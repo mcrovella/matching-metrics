@@ -108,6 +108,8 @@ def rejectProfile(upper, lower, ECvals):
     uv[np.isnan(uv)] = 0.0
     lv[np.isnan(lv)] = 0.0
     single = np.max(np.array([uv,lv]),axis=0)
+    single = np.concatenate([[single[0]],single,[single[-1]]])
+    ECvals = np.concatenate([[0.0],ECvals,[1.0]])
     f = scipy.interpolate.interp1d(ECvals, single)
     testx = np.linspace(0.05,0.95,500)
     testy = f(testx)
@@ -116,20 +118,36 @@ def rejectProfile(upper, lower, ECvals):
     smoothed = scipy.signal.convolve(testy, window/window.sum(), mode='valid')
     return testx[2*sigma:-(2*sigma-1)], smoothed
 
-def allRejPlot(flist,pval):
+def allRejPlot(gtype,n,p,pval):
     profiles = {}
     nvals = {}
-    for f in flist:
+    sampTypes = ['BFS','DEG','EC','RW','XS']
+    for stype in sampTypes:
+        f = '{}/Run-n{}-p{}-s{}.npz'.format(gtype,n//2,p,stype)
         v = np.load(f)
         upper, lower = rejectVals(v['sample'],v['ECvals'],pval)
         testx, profile = rejectProfile(upper, lower, v['ECvals'])
-        profiles[f] = profile
-        nvals[f] = v['n']
+        profiles[stype] = profile
+        nvals[stype] = v['n']
+    for stype in ['None']:
+        f = '{}/Run-n{}-p{}-s{}.npz'.format(gtype,n,p,stype)
+        v = np.load(f)
+        upper, lower = rejectVals(v['sample'],v['ECvals'],pval)
+        testx, profile = rejectProfile(upper, lower, v['ECvals'])
+        profiles[stype] = profile
+        nvals[stype] = v['n']
+    dissim = {}
+    maxdiff = {}
+    for stype in profiles.keys():
+        dissim[stype] = np.linalg.norm(profiles[stype]-profiles['None'])
+        maxdiff[stype] = np.max(np.abs(profiles[stype]-profiles['None']))
     plt.figure()
     for stype in profiles.keys():
-        plt.plot(testx, profiles[stype], label=stype)
+        plt.plot(testx, profiles[stype], label='{} ({}, {})'.format(stype, dissim[stype], maxdiff[stype]))
     plt.legend(loc='best')
-    plt.show()
+    plt.title('Rejection Profiles G = ({},{},{})'.format(gtype,n,p))
+    plt.savefig('{}/Rejprof-n{}-p{}.pdf'.format(gtype,n,p))
+        
 
 def rejectPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     upper, lower = rejectVals(sample, ECvals, pval)

@@ -143,7 +143,7 @@ def allRejPlot(gtype,n,p,pval):
         maxdiff[stype] = np.max(np.abs(profiles[stype]-profiles['None']))
     plt.figure()
     for stype in profiles.keys():
-        plt.plot(testx, profiles[stype], label='{} ({:0.3f}, {:0.3f})'.format(stype, dissim[stype], maxdiff[stype]))
+        plt.plot(testx, profiles[stype], label='{} ({:.3f}, {:.3f})'.format(stype, dissim[stype], maxdiff[stype]))
     plt.legend(loc='best')
     plt.title('Rejection Profiles G = ({},{},{})'.format(gtype,n,p))
     plt.savefig('{}/Rejprof-n{}-p{}.pdf'.format(gtype,n,p))

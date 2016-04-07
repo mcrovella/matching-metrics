@@ -3,13 +3,15 @@ import networkx as nx
 import itertools
 import sys
 import argparse
+import time
+# project code
 import dsd
 import apxgi
 import graphGen
-import time
+import ppiGen
 
 def announce(message):
-    print time.strftime('%H:%M:%S'),message
+    print ('{} {}'.format(time.strftime('%H:%M:%S'),message))
     sys.stdout.flush()
 
 def createGraph(gtype, n, p, ppitype):
@@ -57,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('ptype', choices=perturbFns.keys())
     parser.add_argument('parg', type=float, nargs='?', default=0.0)
     parser.add_argument('ppitype', choices=ppiTypes, nargs='?', default='human')
+    parser.add_argument('steps', type=int, nargs='?', default=500)
     args = parser.parse_args()
 
     perturb = perturbFns[args.ptype]
@@ -65,7 +68,7 @@ if __name__ == '__main__':
     ECvals = []
     NCvals = []
 
-    steps = 500
+    steps = args.steps
 
     for i, nc in zip(range(steps), np.linspace(1/(steps+1), 1, steps, endpoint=False)):
         print('{}/{}'.format(i,steps))
@@ -121,4 +124,4 @@ if __name__ == '__main__':
         np.savez('{}perturb/{}/Run-n{}-p{}-{}-{}'.format(dirprefix,gtype,args.n,args.p,args.ptype,args.parg), sample=sample, ECvals=ECvals, n=args.n, p=args.p, gtype=args.gtype, ptype=args.ptype, parg=args.parg, ppitype=args.ppitype)
     t = time.process_time()
     now = time.asctime()
-    print('Ended: {}\n n={}, p={}, {}, {}, steps={}, elapsed time={:.2f} secs ({:.2f} secs/step).'.format(now,args.n,args.p,args.gtype,args.ptype,steps,t,t/steps))
+    print('Ended: {}\nn={}, p={}, {}, {}, steps={}, elapsed time={:.2f} secs ({:.2f} secs/step).'.format(now,args.n,args.p,gtype,args.ptype,steps,t,t/steps))

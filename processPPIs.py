@@ -11,7 +11,7 @@ def loadPPI(fname):
 
     global _ppis
 
-    if _ppis[fname]:
+    if fname in _ppis:
         return _ppis[fname]
 
     for line in open(fname, 'r'):

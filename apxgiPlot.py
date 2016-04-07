@@ -145,7 +145,9 @@ def allRejPlot(gtype,n,p,pval):
     for stype in profiles.keys():
         plt.plot(testx, profiles[stype], label='{} ({:.3f}, {:.3f})'.format(stype, dissim[stype], maxdiff[stype]))
     plt.legend(loc='best')
-    plt.title('Rejection Profiles G = ({},{},{})'.format(gtype,n,p))
+    plt.xlabel('EC')
+    plt.ylabel(r'$\Delta$EC to reject $H_0$ at p = {}'.format(pval))
+    plt.title('Rejection Profiles for Sampled Graph = ({},{},{})'.format(gtype,n,p))
     plt.savefig('{}/Rejprof-n{}-p{}.pdf'.format(gtype,n,p))
         
 

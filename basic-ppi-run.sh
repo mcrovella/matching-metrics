@@ -1,4 +1,4 @@
-# Run as of Feb 28, 2016
+# Run as of April 7, 2016
 
 python run.py 500 0 PPI noperturb 0 human
 python run.py 500 0 PPI noperturb 0 fly

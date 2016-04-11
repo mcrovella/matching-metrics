@@ -18,7 +18,7 @@ def CIPlot(sample, ECvals, pval, n, p, gtype, ptype='none', parg=0.0):
     plt.ylabel('Node Correctness')
     plt.xlim([0,1])
     plt.ylim([0,1])
-    plt.title('{:2.0f}% Confidence Intervals for NC as a function of EC ({}, {}, {})'.format(100*(1-2*pval),gtype,n,p))
+    plt.title('{:2.0%} Confidence Intervals for NC as a function of EC ({}, {}, {})'.format((1-2*pval),gtype,n,p))
     if (ptype != 'none'):
         plt.suptitle(r'Perturbed graph: {}, {}'.format(ptype, parg))
         plt.savefig('NCCI-n{}-p{}-{}-{}.pdf'.format(n,p,ptype,parg))
